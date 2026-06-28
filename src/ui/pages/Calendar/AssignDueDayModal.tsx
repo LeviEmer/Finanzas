@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Modal } from "@/ui/components/Modal";
 import { FormField } from "@/ui/components/FormField";
 import { Button } from "@/ui/components/Button";
@@ -22,6 +22,10 @@ export function AssignDueDayModal({
   const [dueDay, setDueDay] = useState("1");
   const [submitting, setSubmitting] = useState(false);
   const { errors, validate } = useFormValidation(dueDaySchema);
+
+  useEffect(() => {
+    if (debt) setDueDay(String(debt.dueDay ?? 1));
+  }, [debt]);
 
   if (!debt) return null;
   const currentDebt = debt;
@@ -51,14 +55,16 @@ export function AssignDueDayModal({
           />
         </FormField>
         <p className="text-xs text-neutral-500">
-          Este pago se repetirá automáticamente cada mes en este día.
+          Este pago se repetirá automáticamente cada mes en este día,
+          contando a partir de ahora — no se marcará como atrasado por
+          ciclos anteriores a esta fecha.
         </p>
         <div className="flex justify-end gap-2 pt-2">
           <Button type="button" variant="secondary" onClick={onClose}>
             Cancelar
           </Button>
           <Button type="submit" disabled={submitting}>
-            Asignar fecha
+            {debt.dueDay ? "Actualizar fecha" : "Asignar fecha"}
           </Button>
         </div>
       </form>

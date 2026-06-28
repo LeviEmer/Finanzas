@@ -1,4 +1,5 @@
 import { debtRepository } from "@/data/repositories/debtRepository";
+import { paymentRepository } from "@/data/repositories/paymentRepository";
 import { calculateDueDateInfo } from "@/domain/calendar/dueDateCalculator";
 import type { Debt, ReminderAlertType } from "@/shared/types";
 
@@ -18,12 +19,16 @@ export interface CalendarGroups {
 
 export const calendarService = {
   async getEntries(referenceDate: Date = new Date()): Promise<CalendarEntry[]> {
-    const debts = await debtRepository.getAll();
+    const [debts, allPayments] = await Promise.all([
+      debtRepository.getAll(),
+      paymentRepository.getAll(),
+    ]);
 
     const entries: CalendarEntry[] = [];
     for (const debt of debts) {
       if (debt.status === "paid_off") continue;
-      const info = calculateDueDateInfo(debt, referenceDate);
+      const debtPayments = allPayments.filter((p) => p.debtId === debt.id);
+      const info = calculateDueDateInfo(debt, debtPayments, referenceDate);
       if (!info) continue;
       entries.push({ debt, ...info });
     }
@@ -50,9 +55,11 @@ export const calendarService = {
   },
 
   async assignDueDay(debtId: string, dueDay: number): Promise<void> {
+    const now = new Date().toISOString();
     await debtRepository.update(debtId, {
       dueDay,
-      updatedAt: new Date().toISOString(),
+      dueDayAssignedAt: now,
+      updatedAt: now,
     });
   },
 };

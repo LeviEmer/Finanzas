@@ -89,6 +89,7 @@ export function CalendarPage() {
             <CalendarGroupedList
               groups={groups}
               onRegisterPayment={(entry) => setPaymentDebt(entry.debt)}
+              onEditDueDate={(entry) => setAssigningDebt(entry.debt)}
             />
           </div>
 
@@ -96,6 +97,7 @@ export function CalendarPage() {
             <CalendarGroupedList
               groups={groups}
               onRegisterPayment={(entry) => setPaymentDebt(entry.debt)}
+              onEditDueDate={(entry) => setAssigningDebt(entry.debt)}
             />
           </div>
         </>

@@ -9,6 +9,7 @@ import { alertTone } from "./calendarLabels";
 interface CalendarGroupedListProps {
   groups: CalendarGroups;
   onRegisterPayment: (entry: CalendarEntry) => void;
+  onEditDueDate: (entry: CalendarEntry) => void;
 }
 
 const sections: { key: keyof CalendarGroups; title: string }[] = [
@@ -21,6 +22,7 @@ const sections: { key: keyof CalendarGroups; title: string }[] = [
 export function CalendarGroupedList({
   groups,
   onRegisterPayment,
+  onEditDueDate,
 }: CalendarGroupedListProps) {
   const hasAny = sections.some((s) => groups[s.key].length > 0);
 
@@ -55,10 +57,16 @@ export function CalendarGroupedList({
                       {format(entry.dueDate, "d 'de' MMMM", { locale: es })}
                     </p>
                   </div>
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-2">
                     <Badge tone={alertTone(entry.alertType)}>
                       {formatCurrency(entry.debt.minimumPayment)}
                     </Badge>
+                    <Button
+                      variant="secondary"
+                      onClick={() => onEditDueDate(entry)}
+                    >
+                      Cambiar fecha
+                    </Button>
                     <Button onClick={() => onRegisterPayment(entry)}>
                       Marcar pagado
                     </Button>

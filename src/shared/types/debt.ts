@@ -19,6 +19,7 @@ export interface Debt {
   minimumPayment: number;
   interestRate?: number;
   dueDay?: number;
+  dueDayAssignedAt?: string;
   status: DebtStatus;
   priority: DebtPriority;
   notes?: string;
