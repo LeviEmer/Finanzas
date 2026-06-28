@@ -2,6 +2,8 @@ import { db } from "@/data/db";
 import { downloadTextFile } from "@/shared/utils/downloadFile";
 
 const BACKUP_VERSION = 1;
+const LAST_EXPORT_KEY = "finance-app-last-export-at";
+const LAST_IMPORT_KEY = "finance-app-last-import-at";
 
 interface BackupPayload {
   version: number;
@@ -56,9 +58,24 @@ export const backupService = {
 
     downloadTextFile(
       JSON.stringify(payload, null, 2),
-      `mis-finanzas-backup-${new Date().toISOString().slice(0, 10)}.json`,
+      "mis-finanzas-backup.json",
       "application/json"
     );
+
+    localStorage.setItem(LAST_EXPORT_KEY, payload.exportedAt);
+  },
+
+  /**
+   * Nombre de archivo fijo (sin fecha) a propósito: así, al guardarlo
+   * siempre en la misma carpeta de iCloud Drive, el archivo se sobrescribe
+   * en vez de acumular copias con fecha distinta en cada dispositivo.
+   */
+  getLastExportedAt(): string | null {
+    return localStorage.getItem(LAST_EXPORT_KEY);
+  },
+
+  getLastImportedAt(): string | null {
+    return localStorage.getItem(LAST_IMPORT_KEY);
   },
 
   /**
@@ -138,5 +155,7 @@ export const backupService = {
         ]);
       }
     );
+
+    localStorage.setItem(LAST_IMPORT_KEY, new Date().toISOString());
   },
 };

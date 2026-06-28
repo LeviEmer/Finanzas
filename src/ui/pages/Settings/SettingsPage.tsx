@@ -261,10 +261,20 @@ function SecuritySection() {
 function BackupSection() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [status, setStatus] = useState<string | null>(null);
+  const [lastExportedAt, setLastExportedAt] = useState<string | null>(null);
+  const [lastImportedAt, setLastImportedAt] = useState<string | null>(null);
+
+  useEffect(() => {
+    setLastExportedAt(backupService.getLastExportedAt());
+    setLastImportedAt(backupService.getLastImportedAt());
+  }, []);
 
   async function handleExport() {
     await backupService.exportAll();
-    setStatus("Backup exportado correctamente.");
+    setLastExportedAt(backupService.getLastExportedAt());
+    setStatus(
+      "Backup descargado. Ahora muévelo a tu carpeta de iCloud Drive (ej. iCloud Drive/Mis Finanzas/) para poder importarlo desde tu otro dispositivo."
+    );
   }
 
   async function handleImportFile(e: React.ChangeEvent<HTMLInputElement>) {
@@ -283,6 +293,7 @@ function BackupSection() {
       const text = await file.text();
       const payload = backupService.parseBackupFile(text);
       await backupService.importAll(payload);
+      setLastImportedAt(backupService.getLastImportedAt());
       setStatus("Backup importado correctamente. Recarga la app para ver los datos.");
     } catch (err) {
       setStatus(
@@ -295,14 +306,35 @@ function BackupSection() {
 
   return (
     <div className="rounded-2xl bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 p-5 flex flex-col gap-3">
-      <p className="text-sm font-medium">Backup y exportación</p>
+      <p className="text-sm font-medium">Sincronizar entre Mac y iPhone (vía iCloud Drive)</p>
       <p className="text-xs text-neutral-500">
-        Tus datos viven solo en este dispositivo. Exporta un respaldo
-        periódicamente para no perder tu historial financiero.
+        Como tus datos viven solo en este dispositivo, así es como mantienes
+        la Mac y el iPhone igualados:
       </p>
+      <ol className="text-xs text-neutral-500 list-decimal pl-4 flex flex-col gap-1">
+        <li>
+          En el dispositivo con los datos más recientes, toca{" "}
+          <strong>"Exportar backup"</strong> abajo.
+        </li>
+        <li>
+          Guarda (o mueve) el archivo descargado a una carpeta fija dentro
+          de tu <strong>iCloud Drive</strong>, ej.{" "}
+          <code className="text-[11px]">iCloud Drive/Mis Finanzas/</code>.
+        </li>
+        <li>
+          En el otro dispositivo, abre esa misma carpeta desde la app
+          Archivos y toca <strong>"Importar backup"</strong> aquí.
+        </li>
+      </ol>
+      <p className="text-xs text-neutral-500">
+        El nombre del archivo siempre es el mismo (
+        <code className="text-[11px]">mis-finanzas-backup.json</code>) a
+        propósito, para que se sobrescriba en vez de acumular copias.
+      </p>
+
       <div className="flex gap-2">
         <Button variant="secondary" onClick={handleExport}>
-          Exportar backup (JSON)
+          Exportar backup
         </Button>
         <Button variant="secondary" onClick={() => fileInputRef.current?.click()}>
           Importar backup
@@ -315,7 +347,19 @@ function BackupSection() {
           onChange={handleImportFile}
         />
       </div>
-      {status && <p className="text-xs text-neutral-500">{status}</p>}
+
+      <div className="text-xs text-neutral-400 flex flex-col gap-0.5">
+        <span>
+          Último backup exportado desde este dispositivo:{" "}
+          {lastExportedAt ? new Date(lastExportedAt).toLocaleString() : "nunca"}
+        </span>
+        <span>
+          Último backup importado en este dispositivo:{" "}
+          {lastImportedAt ? new Date(lastImportedAt).toLocaleString() : "nunca"}
+        </span>
+      </div>
+
+      {status && <p className="text-xs text-neutral-600 dark:text-neutral-300">{status}</p>}
     </div>
   );
 }
