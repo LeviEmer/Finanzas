@@ -58,14 +58,16 @@ export const debtSchema = z.object({
     .min(0)
     .max(100, "La tasa no puede superar 100%")
     .optional(),
-  dueDay: z.number().int().min(1).max(31),
-  priority: z.union([
-    z.literal(1),
-    z.literal(2),
-    z.literal(3),
-    z.literal(4),
-    z.literal(5),
-  ]),
+  dueDay: z.number().int().min(1).max(31).optional(),
+  priority: z
+    .union([
+      z.literal(1),
+      z.literal(2),
+      z.literal(3),
+      z.literal(4),
+      z.literal(5),
+    ])
+    .default(3),
   notes: safeOptionalText(500),
 });
 
@@ -114,6 +116,8 @@ export const antExpenseSchema = z.object({
 });
 
 export type AntExpenseFormValues = z.infer<typeof antExpenseSchema>;
+
+export const dueDaySchema = z.number().int().min(1).max(31);
 
 export const settingsSchema = z.object({
   currency: z

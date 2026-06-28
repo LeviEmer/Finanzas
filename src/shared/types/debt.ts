@@ -18,7 +18,7 @@ export interface Debt {
   currentBalance: number;
   minimumPayment: number;
   interestRate?: number;
-  dueDay: number;
+  dueDay?: number;
   status: DebtStatus;
   priority: DebtPriority;
   notes?: string;

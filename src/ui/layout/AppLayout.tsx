@@ -2,6 +2,7 @@ import { Outlet } from "react-router-dom";
 import { Sidebar } from "./Sidebar";
 import { TabBar } from "./TabBar";
 import { useThemeStore } from "@/app/providers/themeStore";
+import { DuePaymentPrompt } from "@/ui/notifications/DuePaymentPrompt";
 
 export function AppLayout() {
   const { darkMode, toggleDarkMode } = useThemeStore();
@@ -23,6 +24,7 @@ export function AppLayout() {
         </main>
       </div>
       <TabBar />
+      <DuePaymentPrompt />
     </div>
   );
 }

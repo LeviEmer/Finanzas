@@ -22,7 +22,9 @@ export interface DueDateInfo {
 export function calculateDueDateInfo(
   debt: Debt,
   referenceDate: Date = new Date()
-): DueDateInfo {
+): DueDateInfo | null {
+  if (!debt.dueDay) return null;
+
   const today = startOfDay(referenceDate);
   const daysInCurrentMonth = getDaysInMonth(today);
   const clampedDay = Math.min(debt.dueDay, daysInCurrentMonth);
@@ -47,7 +49,8 @@ export function calculateDueDateInfo(
 export function calculateNextDueDateAfterPaid(
   debt: Debt,
   referenceDate: Date = new Date()
-): Date {
+): Date | null {
+  if (!debt.dueDay) return null;
   const nextMonth = addMonths(startOfDay(referenceDate), 1);
   const daysInNextMonth = getDaysInMonth(nextMonth);
   const clampedDay = Math.min(debt.dueDay, daysInNextMonth);

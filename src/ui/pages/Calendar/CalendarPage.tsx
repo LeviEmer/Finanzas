@@ -3,6 +3,7 @@ import { calendarService, type CalendarEntry, type CalendarGroups } from "@/serv
 import { debtService } from "@/services/debtService";
 import { CalendarMonthGrid } from "./CalendarMonthGrid";
 import { CalendarGroupedList } from "./CalendarGroupedList";
+import { AssignDueDayModal } from "./AssignDueDayModal";
 import { Modal } from "@/ui/components/Modal";
 import { Button } from "@/ui/components/Button";
 import { formatCurrency } from "@/shared/utils/formatCurrency";
@@ -12,18 +13,22 @@ import type { Debt, Payment } from "@/shared/types";
 export function CalendarPage() {
   const [entries, setEntries] = useState<CalendarEntry[]>([]);
   const [groups, setGroups] = useState<CalendarGroups | null>(null);
+  const [unscheduledDebts, setUnscheduledDebts] = useState<Debt[]>([]);
   const [loading, setLoading] = useState(true);
   const [dayEntries, setDayEntries] = useState<CalendarEntry[] | null>(null);
   const [paymentDebt, setPaymentDebt] = useState<Debt | null>(null);
+  const [assigningDebt, setAssigningDebt] = useState<Debt | null>(null);
 
   async function reload() {
     const referenceDate = new Date();
-    const [entriesData, groupsData] = await Promise.all([
+    const [entriesData, groupsData, unscheduledData] = await Promise.all([
       calendarService.getEntries(referenceDate),
       calendarService.getGroups(referenceDate),
+      calendarService.getUnscheduledDebts(),
     ]);
     setEntries(entriesData);
     setGroups(groupsData);
+    setUnscheduledDebts(unscheduledData);
     setLoading(false);
   }
 
@@ -40,6 +45,11 @@ export function CalendarPage() {
     await reload();
   }
 
+  async function handleAssignDueDay(debtId: string, dueDay: number) {
+    await calendarService.assignDueDay(debtId, dueDay);
+    await reload();
+  }
+
   return (
     <div className="pt-6 flex flex-col gap-6">
       <h1 className="text-xl font-semibold">Calendario de pagos</h1>
@@ -48,6 +58,27 @@ export function CalendarPage() {
         <p className="text-neutral-500">Cargando...</p>
       ) : (
         <>
+          {unscheduledDebts.length > 0 && (
+            <section className="rounded-2xl bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-900 p-4">
+              <p className="text-sm font-medium text-amber-800 dark:text-amber-400 mb-2">
+                Deudas sin fecha de pago asignada
+              </p>
+              <div className="flex flex-col gap-2">
+                {unscheduledDebts.map((debt) => (
+                  <div
+                    key={debt.id}
+                    className="flex items-center justify-between text-sm"
+                  >
+                    <span>{debt.name}</span>
+                    <Button onClick={() => setAssigningDebt(debt)}>
+                      Asignar fecha
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
+
           <CalendarMonthGrid
             referenceDate={new Date()}
             entries={entries}
@@ -100,6 +131,13 @@ export function CalendarPage() {
         debt={paymentDebt}
         onClose={() => setPaymentDebt(null)}
         onSubmit={handleRegisterPayment}
+      />
+
+      <AssignDueDayModal
+        open={assigningDebt !== null}
+        debt={assigningDebt}
+        onClose={() => setAssigningDebt(null)}
+        onAssign={handleAssignDueDay}
       />
     </div>
   );

@@ -65,8 +65,10 @@ export function DebtCard({
       </div>
 
       <p className="text-xs text-neutral-500">
-        Cuota mínima: {formatCurrency(debt.minimumPayment)} · Día de pago:{" "}
-        {debt.dueDay}
+        Cuota mínima: {formatCurrency(debt.minimumPayment)} ·{" "}
+        {debt.dueDay
+          ? `Día de pago: ${debt.dueDay}`
+          : "Sin fecha de pago asignada (ve al Calendario)"}
       </p>
 
       <div className="flex flex-wrap gap-2 pt-1">

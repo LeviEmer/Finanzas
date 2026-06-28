@@ -15,6 +15,8 @@ interface DebtFormModalProps {
   initial?: Debt;
 }
 
+const DEFAULT_PRIORITY: Debt["priority"] = 3;
+
 const emptyForm = {
   name: "",
   type: "credit_card" as Debt["type"],
@@ -22,8 +24,6 @@ const emptyForm = {
   currentBalance: "",
   minimumPayment: "",
   interestRate: "",
-  dueDay: "1",
-  priority: "3",
   notes: "",
 };
 
@@ -42,8 +42,6 @@ export function DebtFormModal({
           currentBalance: String(initial.currentBalance),
           minimumPayment: String(initial.minimumPayment),
           interestRate: initial.interestRate ? String(initial.interestRate) : "",
-          dueDay: String(initial.dueDay),
-          priority: String(initial.priority),
           notes: initial.notes ?? "",
         }
       : emptyForm
@@ -65,8 +63,8 @@ export function DebtFormModal({
       currentBalance: Number(form.currentBalance),
       minimumPayment: Number(form.minimumPayment),
       interestRate: form.interestRate ? Number(form.interestRate) : undefined,
-      dueDay: Number(form.dueDay),
-      priority: Number(form.priority) as DebtFormValues["priority"],
+      dueDay: initial?.dueDay,
+      priority: initial?.priority ?? DEFAULT_PRIORITY,
       notes: form.notes || undefined,
     });
 
@@ -152,59 +150,33 @@ export function DebtFormModal({
           </FormField>
         </div>
 
-        <div className="grid grid-cols-2 gap-3">
-          <FormField label="Cuota mínima" error={errors.minimumPayment}>
-            <input
-              type="number"
-              min={0}
-              step="0.01"
-              inputMode="decimal"
-              className="rounded-lg border border-neutral-300 dark:border-neutral-700 bg-transparent px-3 py-2 text-sm"
-              value={form.minimumPayment}
-              onChange={(e) => update("minimumPayment", e.target.value)}
-            />
-          </FormField>
+        <FormField label="Cuota mínima" error={errors.minimumPayment}>
+          <input
+            type="number"
+            min={0}
+            step="0.01"
+            inputMode="decimal"
+            className="rounded-lg border border-neutral-300 dark:border-neutral-700 bg-transparent px-3 py-2 text-sm"
+            value={form.minimumPayment}
+            onChange={(e) => update("minimumPayment", e.target.value)}
+          />
+        </FormField>
 
-          <FormField label="Tasa de interés % (opcional)" error={errors.interestRate}>
-            <input
-              type="number"
-              min={0}
-              max={100}
-              step="0.01"
-              inputMode="decimal"
-              className="rounded-lg border border-neutral-300 dark:border-neutral-700 bg-transparent px-3 py-2 text-sm"
-              value={form.interestRate}
-              onChange={(e) => update("interestRate", e.target.value)}
-            />
-          </FormField>
-        </div>
-
-        <div className="grid grid-cols-2 gap-3">
-          <FormField label="Día de pago" error={errors.dueDay}>
-            <input
-              type="number"
-              min={1}
-              max={31}
-              className="rounded-lg border border-neutral-300 dark:border-neutral-700 bg-transparent px-3 py-2 text-sm"
-              value={form.dueDay}
-              onChange={(e) => update("dueDay", e.target.value)}
-            />
-          </FormField>
-
-          <FormField label="Prioridad (1 = más urgente)" error={errors.priority}>
-            <select
-              className="rounded-lg border border-neutral-300 dark:border-neutral-700 bg-transparent px-3 py-2 text-sm"
-              value={form.priority}
-              onChange={(e) => update("priority", e.target.value)}
-            >
-              {[1, 2, 3, 4, 5].map((p) => (
-                <option key={p} value={p}>
-                  {p}
-                </option>
-              ))}
-            </select>
-          </FormField>
-        </div>
+        <FormField
+          label="Tasa de interés anual % (opcional, solo si tu deuda genera intereses)"
+          error={errors.interestRate}
+        >
+          <input
+            type="number"
+            min={0}
+            max={100}
+            step="0.01"
+            inputMode="decimal"
+            className="rounded-lg border border-neutral-300 dark:border-neutral-700 bg-transparent px-3 py-2 text-sm"
+            value={form.interestRate}
+            onChange={(e) => update("interestRate", e.target.value)}
+          />
+        </FormField>
 
         <FormField label="Notas (opcional)" error={errors.notes}>
           <textarea
@@ -215,6 +187,14 @@ export function DebtFormModal({
             onChange={(e) => update("notes", e.target.value)}
           />
         </FormField>
+
+        {!initial && (
+          <p className="text-xs text-neutral-500">
+            Después de crear la deuda, asigna su día de pago desde el{" "}
+            <strong>Calendario</strong> — ahí se repite automáticamente cada
+            mes.
+          </p>
+        )}
 
         <div className="flex justify-end gap-2 pt-2">
           <Button type="button" variant="secondary" onClick={onClose}>
