@@ -3,7 +3,7 @@ import { navItems } from "./navigation";
 
 export function Sidebar() {
   return (
-    <aside className="hidden md:flex md:w-60 md:flex-col md:border-r border-neutral-200 dark:border-neutral-800 md:py-6 md:px-3">
+    <aside className="app-desktop-sidebar w-60 flex-col border-r border-neutral-200 dark:border-neutral-800 py-6 px-3">
       <div className="px-3 mb-6 text-lg font-semibold text-neutral-900 dark:text-neutral-100">
         Mis Finanzas
       </div>

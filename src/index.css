@@ -18,3 +18,12 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
+/*
+ * El interruptor mobile/desktop (.app-desktop-sidebar, .app-mobile-tabbar,
+ * .app-mobile-only, .app-desktop-only) se define en index.html, NO aquí.
+ * Razón: el pipeline de build de Tailwind v4 (Lightning CSS) reescribe
+ * automáticamente cualquier "min-width" a la sintaxis moderna
+ * "@media (width >= ...)", no soportada en Safari < 16.4. Escribirlo en
+ * un <style> plano dentro de index.html evita que el bundler la toque.
+ */

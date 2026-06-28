@@ -30,7 +30,7 @@ export function CalendarMonthGrid({
   const leadingBlanks = (getDay(monthStart) + 6) % 7;
 
   return (
-    <div className="hidden md:block">
+    <div className="app-desktop-only">
       <p className="text-sm font-medium mb-3 capitalize">
         {format(referenceDate, "MMMM yyyy", { locale: es })}
       </p>

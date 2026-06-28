@@ -85,7 +85,7 @@ export function CalendarPage() {
             onSelectDay={setDayEntries}
           />
 
-          <div className="md:hidden">
+          <div className="app-mobile-only">
             <CalendarGroupedList
               groups={groups}
               onRegisterPayment={(entry) => setPaymentDebt(entry.debt)}
@@ -93,7 +93,7 @@ export function CalendarPage() {
             />
           </div>
 
-          <div className="hidden md:block">
+          <div className="app-desktop-only">
             <CalendarGroupedList
               groups={groups}
               onRegisterPayment={(entry) => setPaymentDebt(entry.debt)}

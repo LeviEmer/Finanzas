@@ -5,7 +5,7 @@ const primaryItems = navItems.filter((item) => item.primary);
 
 export function TabBar() {
   return (
-    <nav className="md:hidden fixed bottom-0 left-0 right-0 border-t border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900 flex">
+    <nav className="app-mobile-tabbar fixed bottom-0 left-0 right-0 border-t border-neutral-200 dark:border-neutral-800 bg-white dark:bg-neutral-900">
       {primaryItems.map((item) => (
         <NavLink
           key={item.path}

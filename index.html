@@ -15,6 +15,37 @@
     />
     <meta name="referrer" content="strict-origin-when-cross-origin" />
     <title>Mis Finanzas</title>
+    <style>
+      /* Interruptor mobile/desktop, escrito a mano para que ningún
+         bundler lo reescriba a sintaxis moderna de media query
+         (incompatible con Safari < 16.4). No tocar vía Tailwind. */
+      .app-desktop-sidebar {
+        display: none;
+      }
+      .app-mobile-tabbar {
+        display: flex;
+      }
+      .app-mobile-only {
+        display: block;
+      }
+      .app-desktop-only {
+        display: none;
+      }
+      @media (min-width: 768px) {
+        .app-desktop-sidebar {
+          display: flex;
+        }
+        .app-mobile-tabbar {
+          display: none;
+        }
+        .app-mobile-only {
+          display: none;
+        }
+        .app-desktop-only {
+          display: block;
+        }
+      }
+    </style>
   </head>
   <body>
     <div id="root"></div>
